@@ -814,56 +814,51 @@ modeline(struct mgwin *wp, int modelinecolor)
 	char sl[21];		/* Overkill. Space for 2^64 in base 10. */
 	int len;
 
+	char buf[20];
+	time_t now;
+
+	now = time(NULL);
+	strftime(buf, sizeof(buf), "[%-d/%-m/%-y @ %-I:%M%P]", localtime(&now));
+	
 	n = wp->w_toprow + wp->w_ntrows;	/* Location.		 */
 	vscreen[n]->v_color = modelinecolor;	/* Mode line color.	 */
 	vscreen[n]->v_flag |= (VFCHG | VFHBAD);	/* Recompute, display.	 */
 	vtmove(n, 0);				/* Seek to right line.	 */
 	bp = wp->w_bufp;
-	vtputc('-');				/* Encoding in GNU Emacs */
-	vtputc(':');				/* End-of-lline style    */
-	if ((bp->b_flag & BFREADONLY) != 0) {
-		vtputc('%');
-		if ((bp->b_flag & BFCHG) != 0)
-			vtputc('*');
-		else
-			vtputc('%');
-	} else if ((bp->b_flag & BFCHG) != 0) {	/* "*" if changed.	 */
+	
+	vtputs(" ");
+
+	if ((bp->b_flag & BFREADONLY) != 0)	/* Read Only		 */
+		vtputs("RO ");
+	else if ((bp->b_flag & BFCHG) != 0)	/* "*" if changed.	 */
 		vtputc('*');
-		vtputc('*');
-	} else {
+	else
 		vtputc('-');
-		vtputc('-');
-	}
-	vtputc('-');
-	vtputc(' ');
+
+	vtputs(" microEmacs - ");
+	vtputs(buf);
+	vtputs(" - ");
 	n = 6;
+	
 	if (bp->b_bname[0] != '\0') {
 		n += vtputs(bp->b_bname);
 		n += vtputs("  ");
 	}
 
-	while (n < 27) {			/* Pad out with blanks.	 */
-		vtputc(' ');
-		++n;
-	}
-
 	if (linenos && colnos)
-		len = snprintf(sl, sizeof(sl), "(%d,%d)  ", wp->w_dotline, getcolpos(wp));
+		len = snprintf(sl, sizeof(sl), "L%d C%d", wp->w_dotline, getcolpos(wp));
 	else if (linenos)
 		len = snprintf(sl, sizeof(sl), "L%d  ", wp->w_dotline);
 	else if (colnos)
 		len = snprintf(sl, sizeof(sl), "C%d  ", getcolpos(wp));
 	else
 		len = 0;
+
 	if ((linenos || colnos) && len < (int)sizeof(sl) && len != -1)
 		n += vtputs(sl);
 
-	while (n < 35) {			/* Pad out with blanks.	 */
-		vtputc(' ');
-		++n;
-	}
 
-	vtputc('(');
+	vtputs(" (");
 	++n;
 	for (md = 0; ; ) {
 		vtputc(toupper(bp->b_modes[md]->p_name[0]));
@@ -873,6 +868,7 @@ modeline(struct mgwin *wp, int modelinecolor)
 		vtputc(' ');
 		++n;
 	}
+	
 	/* XXX These should eventually move to a real mode */
 	if (macrodef == TRUE)
 		n += vtputs(" def");
@@ -881,14 +877,13 @@ modeline(struct mgwin *wp, int modelinecolor)
 	vtputc(')');
 	++n;
 
-	/* Show time/date/mail */
-	if (timesh) {
-		char buf[20];
-		time_t now;
-
-		now = time(NULL);
-		strftime(buf, sizeof(buf), "  %H:%M", localtime(&now));
-		n += vtputs(buf);
+	while (n < 27) {			/* Pad out with blanks.	 */
+		vtputc(' ');
+		++n;
+	}
+	while (n < 35) {			/* Pad out with blanks.	 */
+		vtputc(' ');
+		++n;
 	}
 
 	while (n < ncol) {			/* Pad out.		 */
