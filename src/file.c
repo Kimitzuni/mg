@@ -710,9 +710,20 @@ writeout(FILE ** ffp, struct buffer *bp, char *fn)
 	lpend = bp->b_headp;
 	eobnl = 0;
 	if (llength(lback(lpend)) != 0) {
-		eobnl = eyorn("No newline at end of file, add one");
-		if (eobnl != TRUE && eobnl != FALSE)
-			return (eobnl); /* abort */
+
+		eobnl = TRUE;
+		/* Basically, I don't like being pestered for not having
+		 * a new line at the end of the file, so let's just add
+		 * it WITHOUT asking me, because 10 times out of 10, I'm
+		 * obviously going to want that new line. Why would we even
+		 * ask if the user wants a new line!?
+		 */
+
+		/*
+		 * eobnl = eyorn("No newline at end of file, add one");
+		 * if (eobnl != TRUE && eobnl != FALSE)
+		 *	return (eobnl); 
+		 */
 	}
 	/* open writes message */
 	if ((s = ffwopen(ffp, fn, bp)) != FIOSUC)

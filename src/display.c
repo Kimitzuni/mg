@@ -835,9 +835,15 @@ modeline(struct mgwin *wp, int modelinecolor)
 	else
 		vtputc('-');
 
-	vtputs(" microEmacs - ");
+	vtputs(" mEmacs");
+
+#ifdef SHOW_TIME_AND_DATE
 	vtputs(buf);
 	vtputs(" - ");
+#else
+	vtputs(": ");
+#endif
+
 	n = 6;
 	
 	if (bp->b_bname[0] != '\0') {
@@ -874,20 +880,20 @@ modeline(struct mgwin *wp, int modelinecolor)
 		n += vtputs(" def");
 	if (globalwd())
 		n += vtputs(" gwd");
-	vtputc(')');
+	vtputs(") ");
 	++n;
 
 	while (n < 27) {			/* Pad out with blanks.	 */
-		vtputc(' ');
+		vtputc('-');
 		++n;
 	}
 	while (n < 35) {			/* Pad out with blanks.	 */
-		vtputc(' ');
+		vtputc('-');
 		++n;
 	}
 
 	while (n < ncol) {			/* Pad out.		 */
-		vtputc(' ');
+		vtputc('-');
 		++n;
 	}
 }
