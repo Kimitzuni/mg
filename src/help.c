@@ -19,7 +19,15 @@
 
 #define KEYNAMESZ	6 /* max is "C-SPC" */
 
-const char *hlp = "C-h q  toggle quick help  |  C-h t  show tutorial  |  C-h b  show key bindings";
+/*
+ * Original Help that shows when you open MG
+ *
+const char *hlp = "C-h q  toggle quick help  |  C-h t  show tutorial  |  \
+		   C-h b  show key bindings";
+
+ * Instead, show no help
+ */
+const char *hlp = "";
 
 static int	showall(struct buffer *, KEYMAP *, char *);
 static int	findbind(KEYMAP *, PF, char *, size_t);

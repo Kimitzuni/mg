@@ -826,7 +826,7 @@ modeline(struct mgwin *wp, int modelinecolor)
 	vtmove(n, 0);				/* Seek to right line.	 */
 	bp = wp->w_bufp;
 	
-	vtputs(" ");
+	vtputs("-");
 
 	if ((bp->b_flag & BFREADONLY) != 0)	/* Read Only		 */
 		vtputs("RO ");
@@ -835,14 +835,9 @@ modeline(struct mgwin *wp, int modelinecolor)
 	else
 		vtputc('-');
 
-	vtputs(" mEmacs");
-
-#ifdef SHOW_TIME_AND_DATE
-	vtputs(buf);
-	vtputs(" - ");
-#else
+	vtputs(" Emacs/mg ");
+	vtputs(VERSION);
 	vtputs(": ");
-#endif
 
 	n = 6;
 	
